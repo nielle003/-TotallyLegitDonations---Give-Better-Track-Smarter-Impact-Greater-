@@ -1,40 +1,104 @@
-import re
 from database import Database
 from user import User
 from campaign import Campaign
 from donation import Donation
 from event import Event
 
-def get_valid_email():
-    while True:
-        email = input("Enter your email: ")
-        if re.match(r"^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$", email):
-            return email
-        print("Invalid email format. Please try again.")
 
-def get_valid_password():
-    while True:
-        password = input("Enter your password (at least 6 characters): ")
-        if len(password) >= 6:
-            return password
-        print("Password must be at least 6 characters long.")
+def add_funds(user_id, db):
+    """Allows the user to add money to their balance."""
+    amount = float(input("\nEnter the amount to add: $"))
+    
+    if amount <= 0:
+        print("Invalid amount. Please enter a positive value.")
+        return
+    
+    # Update user's balance
+    update_query = "UPDATE users SET balance = balance + %s WHERE user_id = %s"
+    db.execute(update_query, (amount, user_id))
 
-def get_valid_role():
-    while True:
-        role = input("Enter your role (donor/organization): ").lower()
-        if role in ["donor", "organization"]:
-            return role
-        print("Invalid role. Please enter 'donor' or 'organization'.")
+    print(f"Successfully added ${amount:.2f} to your balance!")
 
-def get_positive_integer(prompt):
+def get_user_balance(user_id, db):
+    """Fetches the user's current balance."""
+    query = "SELECT balance FROM users WHERE user_id = %s"
+    result = db.fetch(query, (user_id,))
+    return result[0][0] if result else 0
+
+def process_payment(user_id, amount, db):
+    """Checks if the user has enough balance and deducts the amount if valid."""
+    current_balance = get_user_balance(user_id, db)
+    
+    if current_balance >= amount:
+        # Deduct amount from balance
+        update_query = "UPDATE users SET balance = balance - %s WHERE user_id = %s"
+        db.execute(update_query, (amount, user_id))
+        return True
+    else:
+        print("Insufficient balance! Please add funds.")
+        return False
+
+def donor_dashboard(donation, campaign, event, user_id, db):
     while True:
-        try:
-            value = int(input(prompt))
-            if value > 0:
-                return value
-            print("Value must be a positive integer.")
-        except ValueError:
-            print("Invalid input. Please enter a number.")
+        # Fetch and display current balance
+        current_balance = get_user_balance(user_id, db)
+        print(f"\nDonor Dashboard \n Your current balance: ${current_balance:.2f}")
+
+        choice = input("(1) Browse Campaigns, \n(2) Donate to Campaign, \n(3) Donate to Event, \n(4) View Donation History, \n(5) View Events, \n(6) Add Funds, \n(7) Log out: ")
+        
+        if choice == "1":
+            campaign.view_active_campaigns()
+        elif choice == "2":
+            campaign_id = input("Enter campaign ID to donate: ")
+            amount = float(input("Enter donation amount: "))
+
+            if process_payment(user_id, amount, db):
+                donation.donate_to_campaign(user_id, campaign_id, amount)
+            else:
+                print("Donation failed due to insufficient balance.")
+        
+        elif choice == "3":
+            event_id = input("Enter event ID to donate: ")
+            amount = float(input("Enter donation amount: "))
+
+            if process_payment(user_id, amount, db):
+                donation.donate_to_event(user_id, event_id, amount)
+            else:
+                print("Donation failed due to insufficient balance.")
+
+        elif choice == "4":
+            donation.view_donation_history(user_id)
+        elif choice == "5":
+            event.view_active_events()
+        elif choice == "6":
+            add_funds(user_id, db)
+        elif choice == "7":
+            print("Logging out...")
+            break
+        else:
+            print("Invalid choice. Try again.")
+
+
+def organization_dashboard(campaign, user_id):
+    while True:
+        print("\nOrganization Dashboard")
+        choice = input("(1) Create Campaign, (2) View Active Campaigns, (3) View Donations, (4) Log out: ")
+        
+        if choice == "1":
+            title = input("Enter campaign title: ")
+            description = input("Enter campaign description: ")
+            goal_amount = float(input("Enter goal amount: "))
+            deadline = input("Enter deadline (YYYY-MM-DD): ")
+            campaign.create_campaign(user_id, title, description, goal_amount, deadline)
+        elif choice == "2":
+            campaign.view_active_campaigns()
+        elif choice == "3":
+            campaign.view_campaign_donations(user_id)
+        elif choice == "4":
+            print("Logging out...")
+            break
+        else:
+            print("Invalid choice. Try again.")
 
 def main():
     db = Database()
@@ -45,18 +109,18 @@ def main():
 
     while True:
         print("\nWelcome to the Nonprofit Donation System!")
-        choice = input("Do you want to (1) Register, (2) Login, or (3) Exit? ")
+        choice = input("Do you want to (1) Register, (2) Login, or (3) Exit?:  ")
         
         if choice == "1":
-            name = input("Enter your name: ").strip()
-            email = get_valid_email()
-            password = get_valid_password()
-            role = get_valid_role()
+            name = input("Enter your name: ")
+            email = input("Enter your email: ")
+            password = input("Enter your password: ")
+            role = input("Enter your role (donor or organization): ")
             user.register(name, email, password, role)
             logged_in_user = user.login(email, password)
         elif choice == "2":
-            email = get_valid_email()
-            password = get_valid_password()
+            email = input("Enter your email: ")
+            password = input("Enter your password: ")
             logged_in_user = user.login(email, password)
         elif choice == "3":
             print("Exiting system. Goodbye!")
@@ -65,28 +129,15 @@ def main():
             print("Invalid option. Please try again.")
             continue
         
-        while logged_in_user:
-            action = input("Do you want to (1) Log out or (2) Continue using the system? ")
-            if action == "1":
-                print("You have been logged out.")
-                logged_in_user = None
-                break
-            elif action == "2":
-                if logged_in_user[4] == "organization":
-                    campaign.create_campaign(logged_in_user[0], "Food for All", "Helping communities fight hunger", 10000, "2025-12-31")
-                campaign.list_campaigns()
-                if logged_in_user[4] == "donor":
-                    campaign_id = get_positive_integer("Enter campaign ID to donate to: ")
-                    amount = get_positive_integer("Enter donation amount: ")
-                    donation.make_donation(logged_in_user[0], campaign_id, amount)
-                event_name = input("Enter event name: ")
-                event_date = input("Enter event date (YYYY-MM-DD): ")
-                event_location = input("Enter event location: ")
-                event.create_event(event_name, event_date, event_location)
-                event_id = get_positive_integer("Enter event ID to register for: ")
-                event.register_volunteer(event_id, logged_in_user[0])
+        if logged_in_user:
+            user_id, *_, role = logged_in_user
+            if role == "donor":
+                donor_dashboard(donation, campaign, event, user_id, db)
+            elif role == "organization":
+                organization_dashboard(campaign, user_id)
             else:
-                print("Invalid option. Please try again.")
+                print("Login failed. Please try again.")
+                continue
     
     db.close()
 
