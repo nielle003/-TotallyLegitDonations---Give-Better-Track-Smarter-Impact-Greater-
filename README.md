@@ -6,5 +6,7 @@ Purpose: TotallyLegitDonations is a donation management system designed for non-
 
 Members:
 Antony, Aldrich Ryan V.
+
 Barcelona, Nielle E.
+
 Ramos, Mark Kevin I.
