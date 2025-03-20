@@ -6,7 +6,7 @@ class Database:
             self.connection = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="4122133pogi",
+                password="admin",
                 database="nonprofit_donation_db"
             )
             if self.connection.is_connected():
