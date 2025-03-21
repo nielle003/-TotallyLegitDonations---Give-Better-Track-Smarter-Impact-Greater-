@@ -1,4 +1,4 @@
-# DeFraud---Give-Better-Track-Smarter-Impact-Greater-
+#TotallyLegitDonations---Give-Better-Track-Smarter-Impact-Greater-
 A Non-profit Donation management system
 
 System Name: TotallyLegitDonations
