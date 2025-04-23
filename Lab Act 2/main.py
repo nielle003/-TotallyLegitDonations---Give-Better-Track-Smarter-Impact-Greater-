@@ -75,7 +75,7 @@ def donor_dashboard(donation, campaign, event, user_id, db):
             donation.view_donation_history(user_id)
 
         elif choice == "4":
-            event.view_active_events()
+            event.view_active_events(user_id)
 
         elif choice == "5":
             event_id = input("Enter event ID to volunteer: ").strip()

@@ -11,10 +11,10 @@ class User:
         query = "SELECT user_id, name, email, role FROM users WHERE email = %s AND password = %s"
         result = self.__db.fetch(query, (email, password))
 
-        if result:
-            return result[0]  # Ensure it returns a tuple
+        if result and len(result) > 0:
+            return result[0]  # User found, return user details
         else:
-            return 1
+            return None
 
 
     def update_profile(self, user_id, new_name, new_email, new_password):

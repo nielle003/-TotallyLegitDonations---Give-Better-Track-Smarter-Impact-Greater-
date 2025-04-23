@@ -16,17 +16,25 @@ class Event:
         except Exception as e:
             print(f"❌ ERROR: Event creation failed! {e}")
 
-    def view_active_events(self):
-        """Fetch and display all active events."""
-        query = "SELECT event_id, name, description, date, location FROM events WHERE status = 'active'"
-        events = self.__db.fetch(query)
+    def view_active_events(self, user_id):
+        """Fetch and display active events the user has NOT volunteered for."""
+        query = """
+            SELECT e.event_id, e.name, e.description, e.date, e.location
+            FROM events e
+            WHERE e.status = 'active'
+            AND e.event_id NOT IN (
+                SELECT event_id FROM event_volunteers WHERE user_id = %s
+            )
+        """
+        events = self.__db.fetch(query, (user_id,))
 
         if events:
-            print("\n📌 Active Events:")
+            print("\n📌 Active Events Available for You to Volunteer:")
             for event in events:
                 print(f"📅 Event ID: {event[0]} \n{event[1]}  \n{event[2]} \non {event[3]} \nat {event[4]}\n")
         else:
-            print("ℹ️ No active events found.")
+            print("ℹ️ You have volunteered for all available events!")
+
 
     def volunteer_for_event(self, user_id, event_id):
         """Allows a user to volunteer for an event."""
