@@ -6,14 +6,14 @@ class Database:
             self.connection = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="4122133pogi",
+                password="admin",
                 database="nonprofit_donation_db"
             )
             if self.connection.is_connected():
-                self.cursor = self.connection.cursor()  # ✅ Ensure cursor is created
+                self.cursor = self.connection.cursor()
+                print("✅ Connected to the database.")
             else:
-                print("❌ Failed to connect to the database!")
-                self.cursor = None
+                raise Exception("Connection established, but not marked as connected.")
         except mysql.connector.Error as e:
             print(f"❌ Database connection failed! Error: {e}")
             self.connection = None
@@ -22,24 +22,46 @@ class Database:
     def execute(self, query, values=None):
         try:
             if not self.cursor:
-                raise Exception("❌ ERROR: Cursor not initialized!")
+                raise Exception("Cursor is not initialized.")
             self.cursor.execute(query, values or ())
             self.connection.commit()
+        except mysql.connector.Error as e:
+            print(f"❌ ERROR: MySQL execution failed: {e}")
         except Exception as e:
-            print(f"❌ ERROR: Database execution failed! {e}")
+            print(f"❌ ERROR: Execution failed: {e}")
 
     def fetch(self, query, values=None):
         try:
             if not self.cursor:
-                raise Exception("❌ ERROR: Cursor not initialized!")
+                raise Exception("Cursor is not initialized.")
             self.cursor.execute(query, values or ())
             return self.cursor.fetchall()
+        except mysql.connector.Error as e:
+            print(f"❌ ERROR: MySQL fetch failed: {e}")
         except Exception as e:
-            print(f"❌ ERROR: Database fetch failed! {e}")
-            return None
+            print(f"❌ ERROR: Fetch failed: {e}")
+        return []
+
+    def fetch_one(self, query, values=None):
+        try:
+            if not self.cursor:
+                raise Exception("Cursor is not initialized.")
+            self.cursor.execute(query, values or ())
+            return self.cursor.fetchone()
+        except mysql.connector.Error as e:
+            print(f"❌ ERROR: MySQL fetch_one failed: {e}")
+        except Exception as e:
+            print(f"❌ ERROR: Fetch_one failed: {e}")
+        return None
 
     def close(self):
-        if self.cursor:
-            self.cursor.close()
-        if self.connection:
-            self.connection.close()
+        try:
+            if self.cursor:
+                self.cursor.close()
+            if self.connection:
+                self.connection.close()
+            print("🔒 Database connection closed.")
+        except mysql.connector.Error as e:
+            print(f"❌ ERROR: Failed to close database properly: {e}")
+        except Exception as e:
+            print(f"❌ ERROR: General close error: {e}")
