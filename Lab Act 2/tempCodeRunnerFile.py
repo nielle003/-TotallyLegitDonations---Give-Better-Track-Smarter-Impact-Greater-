@@ -1,0 +1,1 @@
+query = "INSERT INTO donations (user_id, campaign_id, amount, donation_date) VALUES (%s, %s, %s, NOW())"
