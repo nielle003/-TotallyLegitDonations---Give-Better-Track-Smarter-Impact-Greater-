@@ -26,16 +26,17 @@ DROP TABLE IF EXISTS `campaigns`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `campaigns` (
   `campaign_id` int NOT NULL AUTO_INCREMENT,
-  `org_id` int DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `description` text,
   `goal_amount` decimal(10,2) NOT NULL,
   `funds_raised` decimal(10,2) DEFAULT '0.00',
   `deadline` date NOT NULL,
+  `status` varchar(20) DEFAULT 'active',
+  `user_id` int NOT NULL,
   PRIMARY KEY (`campaign_id`),
-  KEY `org_id` (`org_id`),
-  CONSTRAINT `campaigns_ibfk_1` FOREIGN KEY (`org_id`) REFERENCES `organizations` (`org_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `fk_campaign_user` (`user_id`),
+  CONSTRAINT `fk_campaign_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,6 +45,7 @@ CREATE TABLE `campaigns` (
 
 LOCK TABLES `campaigns` WRITE;
 /*!40000 ALTER TABLE `campaigns` DISABLE KEYS */;
+INSERT INTO `campaigns` VALUES (2,'blinded','give money',2000.00,4231.00,'2025-03-12','active',8);
 /*!40000 ALTER TABLE `campaigns` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -56,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-07 15:52:35
+-- Dump completed on 2025-04-23 11:02:43

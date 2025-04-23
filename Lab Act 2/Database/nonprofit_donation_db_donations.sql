@@ -26,16 +26,16 @@ DROP TABLE IF EXISTS `donations`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `donations` (
   `donation_id` int NOT NULL AUTO_INCREMENT,
-  `donor_id` int DEFAULT NULL,
+  `user_id` int NOT NULL,
   `campaign_id` int DEFAULT NULL,
   `amount` decimal(10,2) NOT NULL,
   `donation_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`donation_id`),
-  KEY `donor_id` (`donor_id`),
   KEY `campaign_id` (`campaign_id`),
-  CONSTRAINT `donations_ibfk_1` FOREIGN KEY (`donor_id`) REFERENCES `donors` (`donor_id`) ON DELETE CASCADE,
-  CONSTRAINT `donations_ibfk_2` FOREIGN KEY (`campaign_id`) REFERENCES `campaigns` (`campaign_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `fk_donations_user` (`user_id`),
+  CONSTRAINT `donations_ibfk_2` FOREIGN KEY (`campaign_id`) REFERENCES `campaigns` (`campaign_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_donations_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,6 +44,7 @@ CREATE TABLE `donations` (
 
 LOCK TABLES `donations` WRITE;
 /*!40000 ALTER TABLE `donations` DISABLE KEYS */;
+INSERT INTO `donations` VALUES (6,6,2,2000.00,'2025-03-13 09:53:52'),(7,6,2,2000.00,'2025-03-13 09:57:51'),(8,6,2,3111.00,'2025-03-13 10:18:11'),(9,6,2,2000.00,'2025-03-13 10:40:13'),(15,6,2,31.00,'2025-03-14 08:51:58'),(17,6,2,200.00,'2025-03-24 00:16:06');
 /*!40000 ALTER TABLE `donations` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -56,4 +57,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-07 15:52:36
+-- Dump completed on 2025-04-23 11:02:43

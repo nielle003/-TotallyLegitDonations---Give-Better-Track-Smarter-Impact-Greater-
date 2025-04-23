@@ -25,13 +25,17 @@ DROP TABLE IF EXISTS `event_volunteers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `event_volunteers` (
+  `volunteer_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
   `event_id` int NOT NULL,
-  `volunteer_id` int NOT NULL,
-  PRIMARY KEY (`event_id`,`volunteer_id`),
-  KEY `volunteer_id` (`volunteer_id`),
-  CONSTRAINT `event_volunteers_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE CASCADE,
-  CONSTRAINT `event_volunteers_ibfk_2` FOREIGN KEY (`volunteer_id`) REFERENCES `volunteers` (`volunteer_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `name` varchar(255) NOT NULL,
+  `volunteer_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`volunteer_id`),
+  KEY `user_id` (`user_id`),
+  KEY `event_id` (`event_id`),
+  CONSTRAINT `event_volunteers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `event_volunteers_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,6 +44,7 @@ CREATE TABLE `event_volunteers` (
 
 LOCK TABLES `event_volunteers` WRITE;
 /*!40000 ALTER TABLE `event_volunteers` DISABLE KEYS */;
+INSERT INTO `event_volunteers` VALUES (2,6,1,'nil','2025-03-14 08:29:15'),(3,6,1,'nil','2025-03-24 00:16:27');
 /*!40000 ALTER TABLE `event_volunteers` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +57,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-07 15:52:35
+-- Dump completed on 2025-04-23 11:02:43
