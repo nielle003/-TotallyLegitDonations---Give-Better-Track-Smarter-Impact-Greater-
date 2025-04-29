@@ -12,7 +12,7 @@ class User:
         result = self.__db.fetch(query, (email, password))
 
         if result and len(result) > 0:
-            return result[0]  # User found, return user details
+            return result[0], True  # User found, return user details
         else:
             return None
 

@@ -29,6 +29,7 @@ class Donation:
             self.__db.execute(update_query, (amount, campaign_id))
 
             print(f"✅ Successfully donated ${amount:.2f} to campaign ID: {campaign_id}")
+            return True
         except Exception as e:
             print(f"❌ Donation failed due to an error: {e}")
 

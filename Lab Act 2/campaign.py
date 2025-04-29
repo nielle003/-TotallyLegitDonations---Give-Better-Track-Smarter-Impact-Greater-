@@ -12,6 +12,7 @@ class Campaign:
         try:
             self.__db.execute(query, (user_id, title, description, goal_amount, deadline))
             print("✅ Campaign created successfully!")
+            return True
         except Exception as e:
             print(f"❌ ERROR: Campaign creation failed! {e}")
 
