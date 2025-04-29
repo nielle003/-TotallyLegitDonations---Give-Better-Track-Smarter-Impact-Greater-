@@ -44,13 +44,13 @@ def test_user_login():
 def test_campaign_creation():
     db = Database()
     campaign = Campaign(db)
-    result = campaign.create("Save the Rainforest", 5000, "Help us preserve our rainforests.", "org_id")
+    result = campaign.create_campaign("Save the Rainforest", 5000, "Help us preserve our rainforests.", "org_id")
     assert result is True, "Campaign creation should succeed"
 
 def test_make_donation():
     db = Database()
     donation = Donation(db)
-    result = donation.make_donation("user_id", "campaign_id", 100)
+    result = donation.donate_to_campaign("user_id", "1", 100)
     assert result is True, "Donation should be processed successfully"
 
 test_cases = [
